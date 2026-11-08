@@ -25,8 +25,16 @@ public interface FlightManager {
     List<Drone> getDronesByFlightHours();
     HashMap<String, Pilot> getPilotsByFlightHours();
     Pilot getPilot(String id);
+    Drone getDroneById(String id);
+    List<Drone> getDrones();
+    List<Pilot> getPilots();
+
 
     int numPilots();
     int numDrones();
     int numFlightPlans();
+    int numDronesInWarehouse();
+
+    boolean isPilotIntervalInFlightPlanList(String pilotId, LocalDateTime targetStart, LocalDateTime targetEnd);
+    boolean isDroneIntervalInFlightPlanList(String droneId, LocalDateTime targetStart, LocalDateTime targetEnd);
 }

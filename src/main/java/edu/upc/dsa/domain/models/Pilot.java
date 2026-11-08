@@ -1,19 +1,18 @@
 package edu.upc.dsa.domain.models;
 
-import edu.upc.dsa.util.RandomUtils;
-
 import java.util.LinkedList;
-import java.util.List;
 
 public class Pilot {
 
-    private final String name;
-    private final String surname;
-    private final LinkedList<FlightPlan> FlightPlans;
-    private final String id;
-    private final float FlightHours;
+    private String name;
+    private String surname;
+    private LinkedList<FlightPlan> FlightPlans;
+    private String id;
+    private float FlightHours;
 
 
+    public Pilot() {
+    }
 
     public Pilot(String name, String surname, String ID, float FlightHours) {
         this.name = name;
@@ -23,25 +22,35 @@ public class Pilot {
         this.FlightHours = FlightHours;
     }
 
-    public List<FlightPlan> showFlightPlans() {
-        return this.FlightPlans;
-    }
-
-    public int numFlightPlans() {
-        return FlightPlans.size();
-    }
-
-    public void addFLightPlan(FlightPlan flightPlan) {
-        this.FlightPlans.add(flightPlan);
-    }
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public float getFlightHours()
-    {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public float getFlightHours() {
         return FlightHours;
+    }
+
+    public void setFlightHours(float flightHours) {
+        this.FlightHours = flightHours;
     }
 }

@@ -6,36 +6,63 @@ import java.util.Map;
 
 public class FlightPlan {
 
-    private Pilot pilot;
-    private Drone drone;
+    private String pilotId;
+    private String droneId;
     private LocalDateTime planTime;
     private int hours;
     private List<Map.Entry<Double, Double>> positions;
 
-    public FlightPlan(Pilot p, Drone d, LocalDateTime planTime, int hours,  List<Map.Entry<Double, Double>> positions) {
-        this.pilot = p;
-        this.drone = d;
+    public FlightPlan() {}
+
+    public FlightPlan(String pilotId, String droneId, LocalDateTime planTime, int hours, List<Map.Entry<Double, Double>> positions) {
+        this.pilotId = pilotId;
+        this.droneId = droneId;
         this.planTime = planTime;
         this.hours = hours;
         this.positions = positions;
     }
 
-    public Pilot getPilot()
-    {
-        return pilot;
+    public String getPilotId() {
+        return pilotId;
     }
 
-    public Drone getDrone()
-    {
-        return drone;
+    public void setPilotId(String pilotId) {
+        this.pilotId = pilotId;
     }
-    public LocalDateTime getStartTime()
-    {
+
+    public String getDroneId() {
+        return droneId;
+    }
+
+    public void setDroneId(String droneId) {
+        this.droneId = droneId;
+    }
+
+    public LocalDateTime getStartTime() {
         return planTime;
     }
 
-    public LocalDateTime getEndTime()
-    {
+    public void setStartTime(LocalDateTime t) {
+        this.planTime = t;
+    }
+
+    public LocalDateTime getEndTime() {
         return planTime.plusHours(hours);
+    }
+
+    public int getHours() {
+        return hours;
+    }
+
+    public void setHours(int h) {
+        this.hours = h;
+    }
+
+    public List<Map.Entry<Double, Double>> getPositions() {
+        return positions;
+    }
+
+    public void setPositions(List<Map.Entry<Double, Double>> positions) {
+        this.positions = positions;
     }
 }
