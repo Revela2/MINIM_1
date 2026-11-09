@@ -3,6 +3,7 @@ package edu.upc.dsa;
 import edu.upc.dsa.domain.models.Drone;
 import edu.upc.dsa.domain.models.FlightPlan;
 import edu.upc.dsa.domain.models.Pilot;
+import edu.upc.dsa.domain.models.Position;
 import edu.upc.dsa.domain.repository.FlightManager;
 import edu.upc.dsa.domain.repository.FlightManagerImpl;
 import org.junit.After;
@@ -11,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,8 @@ public class FlightManagerTest {
     FlightManager fm;
 
     @Before
-    public void setUp() {
+    public void setUp()
+    {
         fm = FlightManagerImpl.getInstance();
 
         // Add Pilots
@@ -35,13 +36,15 @@ public class FlightManagerTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown()
+    {
         this.fm.clear();
         this.fm = null;
     }
 
     @Test
-    public void addPilotTest() {
+    public void addPilotTest()
+    {
         Assert.assertEquals(3, fm.numPilots());
         fm.addPilot("P4", "Phoenix", "Trace", 600.0f);
         fm.addPilot("P5", "Bob", "Floyd", 450.0f);
@@ -52,7 +55,8 @@ public class FlightManagerTest {
     }
 
     @Test
-    public void addDroneTest() {
+    public void addDroneTest()
+    {
         Assert.assertEquals(3, fm.numDrones());
         fm.addDrone("D4", "Vulture", "Skydio", "X2", 15.0f);
         fm.addDrone("D5", "Raven", "SenseFly", "eBee", 310.0f);
@@ -63,7 +67,8 @@ public class FlightManagerTest {
     }
 
     @Test
-    public void getDronesByFlightHoursTest() {
+    public void getDronesByFlightHoursTest()
+    {
         List<Drone> drones = fm.getDronesByFlightHours();
 
         Assert.assertEquals(3, drones.size());
@@ -78,7 +83,8 @@ public class FlightManagerTest {
     }
 
     @Test
-    public void getPilotsByFlightHoursTest() {
+    public void getPilotsByFlightHoursTest()
+    {
         Map<String, Pilot> pilotsMap = fm.getPilotsByFlightHours();
         List<Pilot> sortedPilots = new ArrayList<>(pilotsMap.values());
 
@@ -94,7 +100,8 @@ public class FlightManagerTest {
     }
 
     @Test
-    public void warehouseMaintenanceTest() {
+    public void warehouseMaintenanceTest()
+    {
         fm.addDroneToWarehouse("D1");
         fm.addDroneToWarehouse("D2");
         Assert.assertEquals(2, fm.numDronesInWarehouse());
@@ -105,16 +112,16 @@ public class FlightManagerTest {
         Assert.assertEquals(0, fm.numDronesInWarehouse());
         fm.doMaintenance();
         Assert.assertEquals(0, fm.numDronesInWarehouse());
-
     }
 
     @Test
-    public void createFlightPlanTest() {
+    public void createFlightPlanTest()
+    {
         Assert.assertEquals(0, fm.numFlightPlans());
 
-        List<Map.Entry<Double, Double>> positions = new ArrayList<>();
-        positions.add(new AbstractMap.SimpleEntry<>(41.3879, 2.1699));
-        positions.add(new AbstractMap.SimpleEntry<>(41.3890, 2.1700));
+        List<Position> positions = new ArrayList<>();
+        positions.add(new Position(41.3879, 2.1699));
+        positions.add(new Position(41.3890, 2.1700));
 
         LocalDateTime start = LocalDateTime.of(2026, 11, 8, 10, 0);
         fm.createFlightPlan("P1", "D1", start, 2, positions);

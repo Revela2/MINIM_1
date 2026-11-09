@@ -1,8 +1,9 @@
 package edu.upc.dsa.domain.repository;
 
-import edu.upc.dsa.domain.models.FlightPlan;
 import edu.upc.dsa.domain.models.Drone;
+import edu.upc.dsa.domain.models.FlightPlan;
 import edu.upc.dsa.domain.models.Pilot;
+import edu.upc.dsa.domain.models.Position;
 import edu.upc.dsa.util.RandomUtils;
 import org.apache.log4j.Logger;
 
@@ -18,28 +19,33 @@ public class FlightManagerImpl implements FlightManager {
     private static FlightManagerImpl instance;
     static final Logger logger = Logger.getLogger(FlightManagerImpl.class);
 
-    private FlightManagerImpl() {
+    private FlightManagerImpl()
+    {
         DroneList = new ArrayList<>();
         WarehouseQueue = new LinkedList<>();
         PilotList = new HashMap<>();
         FlightPlanList = new LinkedList<>();
     }
 
-    public static FlightManagerImpl getInstance() {
+    public static FlightManagerImpl getInstance()
+    {
         if (instance == null) instance = new FlightManagerImpl();
         return instance;
     }
 
-    public void clear() {
+    public void clear()
+    {
         DroneList.clear();
         WarehouseQueue.clear();
         PilotList.clear();
         FlightPlanList.clear();
     }
 
-    public void addPilot(String id, String name, String surname, float FlightHours) {
+    public void addPilot(String id, String name, String surname, float FlightHours)
+    {
         String newId = (id == null || id.isEmpty()) ? RandomUtils.getId() : id;
-        if (PilotList.containsKey(newId)) {
+        if (PilotList.containsKey(newId))
+        {
             logger.error("Duplicate Pilot ID: " + newId);
             return;
         }
@@ -47,26 +53,30 @@ public class FlightManagerImpl implements FlightManager {
         logger.info("Pilot " + id + " has been added");
     }
 
-    public void addDrone(String id, String name, String manufacturer, String model, float FlightHours) {
+    public void addDrone(String id, String name, String manufacturer, String model, float FlightHours)
+    {
         String newId = (id == null || id.isEmpty()) ? RandomUtils.getId() : id;
         Drone d = getDroneById(id);
-        if (d != null) {
+        if (d != null)
+        {
             logger.error("Duplicate Drone ID: " + newId);
             return;
         }
 
         DroneList.add(new Drone(newId, name, manufacturer, model, FlightHours));
-        logger.info("Drone" + id + " has been added");
+        logger.info("Drone " + id + " has been added");
     }
 
-    public List<Drone> getDronesByFlightHours() {
+    public List<Drone> getDronesByFlightHours()
+    {
         List<Drone> res = new LinkedList<>(DroneList);
         res.sort((d1, d2) -> Double.compare(d2.getFlightHours(), d1.getFlightHours()));
         logger.info("Drones sorted by FlightHours");
         return res;
     }
 
-    public HashMap<String, Pilot> getPilotsByFlightHours() {
+    public HashMap<String, Pilot> getPilotsByFlightHours()
+    {
         HashMap<String, Pilot> res = new HashMap<>(PilotList);
         logger.info("Pilots sorted by FlightHours");
         return res.entrySet().stream()
@@ -81,9 +91,12 @@ public class FlightManagerImpl implements FlightManager {
                 ));
     }
 
-    public void addDroneToWarehouse(String id) {
-        for (Drone d : DroneList) {
-            if (Objects.equals(d.getId(), id)) {
+    public void addDroneToWarehouse(String id)
+    {
+        for (Drone d : DroneList)
+        {
+            if (Objects.equals(d.getId(), id))
+            {
                 WarehouseQueue.add(id);
                 logger.info("Drone " + id + " has been added to the warehouse");
                 return;
@@ -92,35 +105,52 @@ public class FlightManagerImpl implements FlightManager {
         logger.warn("Drone " + id + " not found, nothing added");
     }
 
-    public void doMaintenance() {
+    public void doMaintenance()
+    {
         String id = WarehouseQueue.poll();
-        if (id == null) {
+        if (id == null)
+        {
             logger.warn("No drones left in the warehouse");
-        } else {
+        }
+        else
+        {
             logger.info("Drone " + id + " has been removed from the warehouse");
         }
     }
 
-    public void createFlightPlan(String PilotId, String DroneId, LocalDateTime Start, int hours, List<Map.Entry<Double, Double>> positions) {
+    public void createFlightPlan(String PilotId, String DroneId, LocalDateTime Start, int hours, List<Position> positions)
+    {
+        if (Start == null || hours <= 0)
+        {
+            logger.error("Invalid startTime or duration (hours must be > 0)");
+            return;
+        }
+
         Pilot p = PilotList.get(PilotId);
-        if (p == null) {
+        if (p == null)
+        {
             logger.error("Pilot " + PilotId + " not found");
             return;
         }
         Drone d = getDroneById(DroneId);
 
-        if (d == null) {
+        if (d == null)
+        {
             logger.error("Drone " + DroneId + " not found");
             return;
         }
-        for (String id : WarehouseQueue) {
-            if (Objects.equals(d.getId(), id)) {
+        for (String id : WarehouseQueue)
+        {
+            if (Objects.equals(d.getId(), id))
+            {
                 logger.error("Drone " + DroneId + " is in the warehouse");
                 return;
             }
         }
 
-        if (isPilotIntervalInFlightPlanList(PilotId, Start, Start.plusHours(hours)) || isDroneIntervalInFlightPlanList(DroneId, Start, Start.plusHours(hours))) {
+        LocalDateTime end = Start.plusHours(hours);
+        if (isPilotIntervalInFlightPlanList(PilotId, Start, end) || isDroneIntervalInFlightPlanList(DroneId, Start, end))
+        {
             logger.error("This time frame is not available");
             return;
         }
@@ -129,7 +159,8 @@ public class FlightManagerImpl implements FlightManager {
     }
 
     public boolean isPilotIntervalInFlightPlanList(String pilotId, LocalDateTime targetStart, LocalDateTime targetEnd) {
-        if (targetStart.isAfter(targetEnd)) {
+        if (targetStart.isAfter(targetEnd))
+        {
             throw new IllegalArgumentException("Start time cannot be after end time.");
         }
 
@@ -137,14 +168,16 @@ public class FlightManagerImpl implements FlightManager {
                 .filter(fp -> Objects.equals(fp.getPilotId(), pilotId))
                 .anyMatch(fp -> {
                     LocalDateTime fpStart = fp.getStartTime();
-                    LocalDateTime fpEnd = fp.getEndTime();
+                    LocalDateTime fpEnd = fp.endTime();
 
                     return targetStart.isBefore(fpEnd) && targetEnd.isAfter(fpStart);
                 });
     }
 
-    public boolean isDroneIntervalInFlightPlanList(String droneId, LocalDateTime targetStart, LocalDateTime targetEnd) {
-        if (targetStart.isAfter(targetEnd)) {
+    public boolean isDroneIntervalInFlightPlanList(String droneId, LocalDateTime targetStart, LocalDateTime targetEnd)
+    {
+        if (targetStart.isAfter(targetEnd))
+        {
             throw new IllegalArgumentException("Start time cannot be after end time.");
         }
 
@@ -152,17 +185,19 @@ public class FlightManagerImpl implements FlightManager {
                 .filter(fp -> Objects.equals(fp.getDroneId(), droneId))
                 .anyMatch(fp -> {
                     LocalDateTime fpStart = fp.getStartTime();
-                    LocalDateTime fpEnd = fp.getEndTime();
+                    LocalDateTime fpEnd = fp.endTime();
 
                     return targetStart.isBefore(fpEnd) && targetEnd.isAfter(fpStart);
                 });
     }
 
-    public void addFlightPlan(FlightPlan flightPlan) {
+    public void addFlightPlan(FlightPlan flightPlan)
+    {
         FlightPlanList.add(flightPlan);
     }
 
-    public int numPilots() {
+    public int numPilots()
+    {
         return PilotList.size();
     }
 
@@ -178,9 +213,12 @@ public class FlightManagerImpl implements FlightManager {
         return FlightPlanList.size();
     }
 
-    public Drone getDroneById(String id) {
-        for (Drone drone : DroneList) {
-            if (Objects.equals(drone.getId(), id)) {
+    public Drone getDroneById(String id)
+    {
+        for (Drone drone : DroneList)
+        {
+            if (Objects.equals(drone.getId(), id))
+            {
                 return drone;
             }
         }

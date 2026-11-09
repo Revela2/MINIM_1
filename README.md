@@ -1,5 +1,7 @@
+# MINIM 1
+
 This code Manages FlightPlans using drones.
 
-The code is moslty implemented, with flightplan creation remaining.
+The code features a management system that adds Pilots and Drones, manages a warehouse using a drone queue and flight plan creation.
 
-Testing and REST implementation is also pending.
+It also implements a REST API built in Jackson and swagger to manage those services via web service.

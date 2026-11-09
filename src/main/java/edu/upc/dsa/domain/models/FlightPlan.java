@@ -1,23 +1,25 @@
 package edu.upc.dsa.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 public class FlightPlan {
 
     private String pilotId;
     private String droneId;
-    private LocalDateTime planTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS][X]")
+    private LocalDateTime startTime;
     private int hours;
-    private List<Map.Entry<Double, Double>> positions;
+    private List<Position> positions;
 
     public FlightPlan() {}
 
-    public FlightPlan(String pilotId, String droneId, LocalDateTime planTime, int hours, List<Map.Entry<Double, Double>> positions) {
+    public FlightPlan(String pilotId, String droneId, LocalDateTime startTime, int hours, List<Position> positions) {
         this.pilotId = pilotId;
         this.droneId = droneId;
-        this.planTime = planTime;
+        this.startTime = startTime;
         this.hours = hours;
         this.positions = positions;
     }
@@ -39,15 +41,15 @@ public class FlightPlan {
     }
 
     public LocalDateTime getStartTime() {
-        return planTime;
+        return startTime;
     }
 
     public void setStartTime(LocalDateTime t) {
-        this.planTime = t;
+        this.startTime = t;
     }
 
-    public LocalDateTime getEndTime() {
-        return planTime.plusHours(hours);
+    public LocalDateTime endTime() {
+        return startTime.plusHours(hours);
     }
 
     public int getHours() {
@@ -58,11 +60,11 @@ public class FlightPlan {
         this.hours = h;
     }
 
-    public List<Map.Entry<Double, Double>> getPositions() {
+    public List<Position> getPositions() {
         return positions;
     }
 
-    public void setPositions(List<Map.Entry<Double, Double>> positions) {
+    public void setPositions(List<Position> positions) {
         this.positions = positions;
     }
 }
